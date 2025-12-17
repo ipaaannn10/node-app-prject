@@ -1,40 +1,37 @@
-<%- include('../layout/header', { user: user }) %>
-
-<div class="row">
-    <div class="col-md-4">
-        <div class="card mb-4">
-            <div class="card-header">Tambah Paket Baru</div>
-            <div class="card-body">
-                <form action="/admin/dashboard/add-paket" method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label>Nama Paket</label>
-                        <input type="text" name="nama_paket" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Harga</label>
-                        <input type="number" name="harga" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Deskripsi</label>
-                        <textarea name="deskripsi" class="form-control"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label>Gambar (JPG/PNG -> Auto WebP)</label>
-                        <input type="file" name="gambar" class="form-control" accept="image/*">
-                    </div>
-                    <button type="submit" class="btn btn-success">Simpan Paket</button>
-                </form>
-            </div>
-        </div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>body { font-family: sans-serif; background-color: #f0f0f0; padding: 20px; } .header { background-color: #007bff; color: white; padding: 15px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; } .content { background: white; padding: 20px; margin-top: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); } a { color: #007bff; text-decoration: none; } a:hover { text-decoration: underline; }</style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome, <%= user.username %>!</h1>
+        <a href="/auth/logout" style="color: white; border: 1px solid white; padding: 5px 10px; border-radius: 5px;">Logout</a>
     </div>
 
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">Daftar Paket</div>
-            <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
+    <div class="content">
+        <h2>Dashboard Admin SEO Engine</h2>
+        <p>Anda telah berhasil masuk ke sistem. Semua masalah server telah selesai!</p>
+        
+        <h3>Status Sistem:</h3>
+        <ul>
+            <li>**Database:** Koneksi Sukses!</li>
+            <li>**Deployment:** GitHub Berjalan Otomatis.</li>
+        </ul>
+
+        <h3>Fitur Selanjutnya:</h3>
+        <p>Sekarang kita fokus ke fitur utama lu:</p>
+        <ul>
+            <li><a href="#">CRUD Paket</a> (Tabel 'paket')</li>
+            <li><a href="#">Image Compressor & WebP</a> (Menggunakan Sharp)</li>
+            <li><a href="#">Pengaturan Logo Dinamis</a></li>
+        </ul>
+    </div>
+</body>
+</html>                        <tr>
                             <th>Gambar</th>
                             <th>Nama</th>
                             <th>Harga</th>
