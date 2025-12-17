@@ -1,40 +1,53 @@
+// routes/admin/auth.js
 const express = require('express');
 const router = express.Router();
-const db = require('../../utils/db');
 const bcrypt = require('bcryptjs');
+const db = require('../../utils/db');
 
-// Halaman Login
+// [GET] Tampilkan Halaman Login
 router.get('/login', (req, res) => {
-    if (req.session.userId) return res.redirect('/admin/dashboard');
-    res.render('admin/login', { error: null });
+    // Jika sudah login, redirect ke dashboard
+    if (req.session.isLoggedIn) {
+        return res.redirect('/admin'); 
+    }
+    res.render('admin/login', { error: req.session.loginError });
+    req.session.loginError = null; 
 });
 
-// Proses Login
+// [POST] Proses Login
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    
+
     try {
         const [rows] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
         const user = rows[0];
 
-        if (!user) {
-            return res.render('admin/login', { error: 'User tidak ditemukan' });
-        }
-
-        // Cek Password (gunakan bcrypt.compareSync untuk production)
-        // Untuk demo cepat dengan hash manual di SQL, pastikan logika ini sesuai
-        const isMatch = await bcrypt.compare(password, user.password_hashed);
-        
-        // JIKA ANDA BELUM PUNYA HASH VALID DI DB, GANTI LINE DI ATAS DENGAN:
-        // const isMatch = (password === "password123"); // HANYA UNTUK TESTING
-
-        if (isMatch) {
-            req.session.userId = user.id;
-            req.session.username = user.username;
-            return res.redirect('/admin/dashboard');
+        if (user && await bcrypt.compare(password, user.password_hashed)) {
+            // Login Sukses
+            req.session.isLoggedIn = true;
+            req.session.user = { id: user.id, username: user.username };
+            return res.redirect('/admin'); 
         } else {
-            return res.render('admin/login', { error: 'Password salah' });
+            // Login Gagal
+            req.session.loginError = 'Username atau Password salah!';
+            return res.redirect('/auth/login');
         }
+    } catch (error) {
+        // Ini adalah error yang lu alami (DB Connection)
+        console.error('Error saat login/koneksi DB:', error);
+        req.session.loginError = 'Terjadi kesalahan server saat menghubungkan database.';
+        res.redirect('/auth/login');
+    }
+});
+
+// [GET] Proses Logout
+router.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/auth/login');
+    });
+});
+
+module.exports = router;        }
     } catch (err) {
         console.error(err);
         res.render('admin/login', { error: 'Terjadi kesalahan server' });
